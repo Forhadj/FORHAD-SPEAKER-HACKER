@@ -1,12 +1,12 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# === রঙের কোড ===
+# === Colors ===
 green="\e[92m"
 red="\e[91m"
 blue="\e[94m"
 end="\e[0m"
 
-# === ব্যানার ===
+# === Banner ===
 clear
 echo -e "${green}
 ███████╗ ██████╗ ██████╗ ██╗  ██╗ █████╗ ██████╗ 
@@ -18,42 +18,43 @@ echo -e "${green}
     🔊 FORHAD-SPEAKER-HACKER PRO 🔊
 ${end}"
 
-# === pulseaudio চালু করা ===
+# === Start pulseaudio if not running ===
 pulseaudio --check 2>/dev/null
 if [ $? -ne 0 ]; then
-    echo -e "${blue}[*] pulseaudio চালু হচ্ছে...${end}"
+    echo -e "${blue}[*] Starting pulseaudio...${end}"
     pulseaudio --start
 fi
 
-# === ইউজারকে ব্লুটুথ চালাতে বলো ===
-echo -e "${blue}[*] অনুগ্রহ করে Bluetooth চালু করো এবং স্পিকার আগে থেকেই কানেক্ট করে রাখো!${end}"
+# === Tell user to turn on Bluetooth and connect speaker ===
+echo -e "${blue}[*] Please make sure Bluetooth is ON and your speaker is connected!${end}"
 sleep 2
 
-# === মেনু ===
+# === Menu ===
 echo -e "${blue}
-[1] .mp3 গান চালাও
-[2] লেখাকে ভয়েসে চালাও (Text-to-Speech)
-[0] বাহির হও
+[1] Play an .mp3 file
+[2] Speak typed text (Text-to-Speech)
+[0] Exit
 ${end}"
-read -p "[+] অপশন বেছে নাও: " opt
+read -p "[+] Choose an option: " opt
 
 if [ "$opt" == "1" ]; then
-    read -p "[🎵] .mp3 ফাইলের path দাও: " mp3file
+    read -p "[🎵] Enter the path to your .mp3 file: " mp3file
     if [ ! -f "$mp3file" ]; then
-        echo -e "${red}[!] ফাইল খুঁজে পাওয়া যায়নি!${end}"
+        echo -e "${red}[!] File not found!${end}"
         exit 1
     fi
-    echo -e "${green}[✓] গান চালানো হচ্ছে Bluetooth স্পিকারে...${end}"
+    echo -e "${green}[✓] Playing on Bluetooth speaker...${end}"
     mpv "$mp3file"
 
 elif [ "$opt" == "2" ]; then
-    read -p "[🗣️] তুমি যা বলতে চাও লিখো: " text
-    echo "$text" | termux-tts-speak
-    echo -e "${green}[✓] ভয়েস চালানো হয়েছে!${end}"
+    read -p "[🗣️] Enter text to speak: " text
+    # Using espeak for TTS
+    espeak "$text"
+    echo -e "${green}[✓] Text spoken!${end}"
 
 elif [ "$opt" == "0" ]; then
-    echo -e "${blue}[*] বাহির হচ্ছি...${end}"
+    echo -e "${blue}[*] Exiting...${end}"
     exit 0
 else
-    echo -e "${red}[!] ভুল অপশন!${end}"
+    echo -e "${red}[!] Invalid option!${end}"
 fi
